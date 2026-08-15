@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Union Letter Generator v5</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -330,7 +329,6 @@
 
         </div>
           <button class="primary" type="button" onclick="printLetter()">Generate / Print A4</button>
-          <button class="success" type="button" onclick="showExportMessage()">Download PDF</button>
           <button class="secondary" type="button" onclick="clearForm()">Clear</button>
         </div>
       </section>
@@ -520,44 +518,6 @@
     updatePreview();
   };
 
-  window.showExportMessage = async function(){
-    updatePreview();
-    if(typeof html2pdf === 'undefined'){
-      alert('PDF library could not be loaded. Please check your internet connection and try again.');
-      return;
-    }
-
-    const paper = $('paper').cloneNode(true);
-    paper.querySelectorAll('button,input,textarea,select,.toolbar,.editor,.no-print,.page-footer').forEach(el => el.remove());
-    paper.style.width = '170mm';
-    paper.style.margin = '0';
-    paper.style.padding = '0';
-    paper.style.background = '#fff';
-    paper.style.boxShadow = 'none';
-
-    const wrapper = document.createElement('div');
-    wrapper.style.width = '170mm';
-    wrapper.style.background = '#fff';
-    wrapper.style.margin = '0';
-    wrapper.appendChild(paper);
-    document.body.appendChild(wrapper);
-
-    try{
-      await html2pdf().set({
-        margin: [20,20,20,20],
-        filename: 'Union-Letter.pdf',
-        image: {type:'jpeg', quality:0.98},
-        html2canvas: {scale:2, useCORS:true, backgroundColor:'#ffffff'},
-        jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
-        pagebreak: {mode:['css','legacy'], avoid:['.letterhead','.signature']}
-      }).from(wrapper).save();
-    }catch(e){
-      console.error(e);
-      alert('PDF download could not be completed. Please use Print A4 → Save as PDF.');
-    }finally{
-      wrapper.remove();
-    }
-  };
 
   function updatePageCount(){
     // Browser print engines do not expose the final page count to JavaScript.
