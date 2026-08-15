@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Union Letter Generator v5</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -329,7 +330,7 @@
 
         </div>
           <button class="primary" type="button" onclick="printLetter()">Generate / Print A4</button>
-          <button class="success" type="button" onclick="showExportMessage()">Download Word/PDF</button>
+          <button class="success" type="button" onclick="showExportMessage()">Download PDF</button>
           <button class="secondary" type="button" onclick="clearForm()">Clear</button>
         </div>
       </section>
@@ -519,11 +520,43 @@
     updatePreview();
   };
 
-  window.showExportMessage = function(){
-    alert(
-      'The current prototype is ready for A4 printing. ' +
-      'Automatic DOCX/PDF file export can be connected to the final web application.'
-    );
+  window.showExportMessage = async function(){
+    updatePreview();
+    if(typeof html2pdf === 'undefined'){
+      alert('PDF library could not be loaded. Please check your internet connection and try again.');
+      return;
+    }
+
+    const paper = $('paper').cloneNode(true);
+    paper.querySelectorAll('button,input,textarea,select,.toolbar,.editor,.no-print,.page-footer').forEach(el => el.remove());
+    paper.style.width = '170mm';
+    paper.style.margin = '0';
+    paper.style.padding = '0';
+    paper.style.background = '#fff';
+    paper.style.boxShadow = 'none';
+
+    const wrapper = document.createElement('div');
+    wrapper.style.width = '170mm';
+    wrapper.style.background = '#fff';
+    wrapper.style.margin = '0';
+    wrapper.appendChild(paper);
+    document.body.appendChild(wrapper);
+
+    try{
+      await html2pdf().set({
+        margin: [20,20,20,20],
+        filename: 'Union-Letter.pdf',
+        image: {type:'jpeg', quality:0.98},
+        html2canvas: {scale:2, useCORS:true, backgroundColor:'#ffffff'},
+        jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
+        pagebreak: {mode:['css','legacy'], avoid:['.letterhead','.signature']}
+      }).from(wrapper).save();
+    }catch(e){
+      console.error(e);
+      alert('PDF download could not be completed. Please use Print A4 → Save as PDF.');
+    }finally{
+      wrapper.remove();
+    }
   };
 
   function updatePageCount(){
@@ -581,7 +614,9 @@
       .header-committee { position:absolute; left:25%; width:50%; top:24%; text-align:center; font-family:"Times New Roman",Times,serif; font-size:15pt; font-weight:700; line-height:1.1; color:#0000ee; white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
       .letter-content { width:170mm; padding:0; margin:0; }
       .meta { display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; margin:0 0 5mm; }
+      .recipient { line-height:1.55; margin-bottom:9mm; }
       .address { white-space:pre-line; }
+      .subject { font-weight:700; margin:0 0 6mm; }
       .body-preview { min-height:0!important; height:auto!important; max-width:100%; line-height:1.7; white-space:normal; overflow:visible!important; overflow-wrap:anywhere; word-break:break-word; }
       .body-preview p,.body-preview div,.body-preview li { max-width:100%; white-space:normal!important; overflow-wrap:anywhere; word-break:break-word; }
       .body-preview img,.body-preview table { max-width:100%; height:auto; }
