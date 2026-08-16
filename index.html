@@ -208,50 +208,28 @@
     }
   }
 </style>
-
-<style id="final-layout">
-  .main{
-    width:100%;
-    max-width:1240px;
-    margin:0 auto;
-    padding:20px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:20px;
-    align-items:stretch;
-  }
-  .card,.preview-wrap{min-width:0}
-  .editor-toolbar{align-items:center}
-  .editor-toolbar .inline-tool{white-space:nowrap}
-  @media (min-width:901px){
-    .app{display:block}
-    .main{width:min(1240px, calc(100% - 40px)); max-width:none;}
-  }
-  @media (max-width:900px){
-    .main{width:100%;padding:12px}
-    .grid{grid-template-columns:1fr;gap:14px}
-  }
-</style>
-
-<style id="new-letter-style">
-.top-action-bar{margin-bottom:12px}
-.create-new-letter-btn{border:0;border-radius:7px;padding:10px 15px;font-weight:700;cursor:pointer;background:#edf0f5;color:#253044}
-@media(max-width:900px){.create-new-letter-btn{width:100%;min-height:42px}}
-</style>
-</head>
+<style id="final-tweaks">.copy-to-gap{height:3.2em}.editor-toolbar{flex-wrap:wrap;align-items:center}.editor-toolbar .inline-tool{white-space:nowrap}#orgName[readonly]{background:#f1f3f5;cursor:not-allowed;font-weight:600}@media(max-width:900px){.copy-to-gap{height:3em}}</style><style>.create-new-btn{margin-top:8px}@media(max-width:900px){.create-new-btn{width:100%;min-height:42px}}</style></head>
 <body>
 <div class="app">
 <main class="main">
-    <div class="top-action-bar"><button type="button" class="create-new-letter-btn" id="createNewLetterBtn">＋ Create New Letter</button></div>
     <div class="top">
       <div>
-        <h1>Create New Letter</h1>
+        <h1>Create New Letter</h1><button id="createNewLetterBtn" class="secondary create-new-btn" type="button" onclick="clearForm()">＋ Create New Letter</button>
         <div class="sub">A4 paper · 2 cm margins · live preview</div>
       </div>
       <div class="top-controls">
-<button class="secondary" type="button" onclick="printLetter()">🖨 Print A4</button>
+        <label for="fontSize">Font Size</label>
+        <select id="fontSize" onchange="setFontSize(this.value)">
+          <option value="10">10 pt</option>
+          <option value="11">11 pt</option>
+          <option value="12" selected>12 pt</option>
+          <option value="13">13 pt</option>
+          <option value="14">14 pt</option>
+          <option value="15">15 pt</option>
+          <option value="16">16 pt</option>
+          <option value="18">18 pt</option>
+        </select>
+        <button class="secondary" type="button" onclick="printLetter()">🖨 Print A4</button>
       </div>
     </div>
 
@@ -301,27 +279,7 @@
               <button type="button" onclick="formatBody('justifyCenter')" title="Center">Center</button>
               <button type="button" onclick="formatBody('justifyRight')" title="Right">Right</button>
               <button type="button" onclick="formatBody('justifyFull')" title="Justify">Justify</button>
-              <button type="button" onclick="formatBody('removeFormat')" title="Clear formatting">Clear</button>
-              <span class="toolbar-separator"></span>
-              <label class="inline-tool" for="fontSize">Font Size</label>
-              <select id="fontSize" onchange="setFontSize(this.value)" aria-label="Font Size">
-                <option value="10">10 pt</option><option value="11">11 pt</option>
-                <option value="12" selected>12 pt</option><option value="13">13 pt</option>
-                <option value="14">14 pt</option><option value="15">15 pt</option>
-                <option value="16">16 pt</option><option value="18">18 pt</option>
-              </select>
-              <label class="inline-tool" for="lineGap">Line Gap</label>
-              <select id="lineGap" onchange="setLineGap(this.value)" aria-label="Line Gap">
-                <option value="1.2">1.2</option><option value="1.4">1.4</option>
-                <option value="1.5" selected>1.5</option><option value="1.7">1.7</option>
-                <option value="2">2.0</option>
-              </select>
-              <label class="inline-tool" for="paraGap">Paragraph Gap</label>
-              <select id="paraGap" onchange="setParagraphGap(this.value)" aria-label="Paragraph Gap">
-                <option value="0">0 pt</option><option value="4">4 pt</option>
-                <option value="6" selected>6 pt</option><option value="8">8 pt</option>
-                <option value="12">12 pt</option><option value="18">18 pt</option>
-              </select>
+              <button type="button" onclick="formatBody('removeFormat')" title="Clear formatting">Clear</button><span class="toolbar-separator"></span><label class="inline-tool" for="lineGap">Line Gap</label><select id="lineGap" onchange="setLineGap(this.value)"><option value="1.2">1.2</option><option value="1.4">1.4</option><option value="1.5" selected>1.5</option><option value="1.7">1.7</option><option value="2">2.0</option></select><label class="inline-tool" for="paraGap">Paragraph Gap</label><select id="paraGap" onchange="setParagraphGap(this.value)"><option value="0">0 pt</option><option value="4">4 pt</option><option value="6" selected>6 pt</option><option value="8">8 pt</option><option value="12">12 pt</option><option value="18">18 pt</option></select>
             </div>
             <div id="bodyEditor" class="editor" contenteditable="true" data-placeholder="Enter the main body of the letter..."></div>
             <div class="hint">Supports bold, italic, underline and paragraph alignment.</div>
@@ -332,22 +290,25 @@
             <input id="signatory" value="General Secretary" placeholder="Designation / Position">
           </div>
 
-          <div>
-            <label for="orgName">Organisation Name</label>
-            <input id="orgName" value="" placeholder="Organisation name">
-          </div>
-
-
-
-          <div class="full">
-            <label for="copyTo">Copy To</label>
-            <textarea id="copyTo" rows="3" placeholder="Enter copy recipients, one per line"></textarea>
-          </div>
-
           <div class="full">
             <label for="committee">Committee</label>
             <input id="committee" value="" placeholder="e.g. Central Committee">
             <div class="hint">The Committee name is placed automatically in the blank area below the union name on the letterhead and is also shown below the organisation name.</div>
+<div>
+            <label for="orgName">Organisation Name</label>
+            <input id="orgName" value="Asom Mojuri Shramik Union" readonly aria-readonly="true">
+          </div>
+<div class="copy-to-gap"></div>
+<div class="full">
+            <label for="copyTo">Copy To</label>
+            <textarea id="copyTo" rows="3" placeholder="Enter copy recipients, one per line"></textarea>
+          </div>
+
+
+
+          
+
+          
           </div>
           </div>
 
@@ -375,7 +336,7 @@
             <b>To</b><br>
             <span id="previewTo">Name</span><br>
             <span id="previewToDesignation">Designation</span><br>
-            <span id="previewAddress" class="address"><span id="previewAddressText"></span></span>
+            <span id="previewAddress" class="address">Address</span>
           </div>
 
           <div class="subject">
@@ -445,10 +406,7 @@
     previewBody.innerHTML = editor.innerHTML.trim()
       ? editor.innerHTML
       : '<span class="body-placeholder">The main body of the letter will appear here.</span>';
-
-    // Re-apply the selected paragraph gap after rebuilding the preview.
-    const paragraphGap = $('paraGap') ? $('paraGap').value : '6';
-    applyParagraphGap(paragraphGap);
+    if(typeof applyBodySpacing === "function") applyBodySpacing();
 
     $('previewSignatory').textContent =
       textValue('signatory') || 'General Secretary';
@@ -517,14 +475,8 @@
   });
 
   // Rich text editor updates on every change.
-  $('bodyEditor').addEventListener('input', function(){
-    updatePreview();
-    applyParagraphGap($('paraGap') ? $('paraGap').value : '6');
-  });
-  $('bodyEditor').addEventListener('keyup', function(){
-    updatePreview();
-    applyParagraphGap($('paraGap') ? $('paraGap').value : '6');
-  });
+  $('bodyEditor').addEventListener('input', function(){updatePreview();applyBodySpacing();});
+  $('bodyEditor').addEventListener('keyup', function(){updatePreview();applyBodySpacing();});
 
   // Handle pasted content.
   $('bodyEditor').addEventListener('paste', function(){
@@ -540,7 +492,7 @@
     $('toDesignation').value = '';
     $('address').value = '';
     $('subject').value = '';
-    $('orgName').value = '';
+    $('orgName').value = 'Asom Mojuri Shramik Union';
     $('committee').value = '';
     $('copyTo').value = '';
     $('bodyEditor').innerHTML = '';
@@ -572,39 +524,10 @@
   setFontSize('12');
 
 
-  function setLineGap(value){
-    const editor = $('bodyEditor');
-    const preview = $('previewBody');
-    if(editor) editor.style.lineHeight = value;
-    if(preview) preview.style.lineHeight = value;
-    updatePreview();
-  }
-  window.setLineGap = setLineGap;
 
-  function applyParagraphGap(value){
-    const gap = (parseFloat(value) || 0) + 'pt';
-    const targets = [$('bodyEditor'), $('previewBody')].filter(Boolean);
-
-    targets.forEach(container => {
-      container.querySelectorAll('p,div,li').forEach(el => {
-        el.style.marginBottom = gap;
-      });
-    });
-  }
-
-  function setParagraphGap(value){
-    const gap = parseFloat(value) || 0;
-    $('paraGap').value = String(gap);
-
-    // Apply immediately to the editable body.
-    applyParagraphGap(gap);
-
-    // Rebuild the preview, then apply the spacing again because
-    // updatePreview replaces previewBody.innerHTML.
-    updatePreview();
-    applyParagraphGap(gap);
-  }
-  window.setParagraphGap = setParagraphGap;
+  function applyBodySpacing(){const line=$('lineGap')?$('lineGap').value:'1.5';const gap=($('paraGap')?$('paraGap').value:'6')+'pt';const ed=$('bodyEditor'),pv=$('previewBody');if(ed)ed.style.lineHeight=line;if(pv){pv.style.lineHeight=line;pv.querySelectorAll('p,div,li').forEach(el=>el.style.marginBottom=gap);}}
+  function setLineGap(v){updatePreview();applyBodySpacing();} window.setLineGap=setLineGap;
+  function setParagraphGap(v){updatePreview();applyBodySpacing();} window.setParagraphGap=setParagraphGap;
 
   window.printLetter = function(){
     updatePreview();
@@ -620,11 +543,9 @@
     }
 
     const fs = $('fontSize').value || 12;
-    const paragraphGap = $('paraGap').value || 6;
-
-    // Make sure the selected paragraph gap is present in the cloned paper.
-    paper.querySelectorAll('.body-preview p, .body-preview div, .body-preview li')
-      .forEach(el => el.style.marginBottom = paragraphGap + 'pt');
+    const lineGap = $('lineGap') ? $('lineGap').value : 1.5;
+    const paragraphGap = $('paraGap') ? $('paraGap').value : 6;
+    paper.querySelectorAll('.body-preview p,.body-preview div,.body-preview li').forEach(el => el.style.marginBottom = paragraphGap + 'pt');
 
     const css = `
       @page {
@@ -648,8 +569,8 @@
       .recipient { line-height:1.55; margin-bottom:9mm; }
       .address { white-space:pre-line; }
       .subject { font-weight:700; margin:0 0 6mm; }
-      .body-preview { min-height:0!important; height:auto!important; max-width:100%; line-height:1.7; white-space:normal; overflow:visible!important; overflow-wrap:anywhere; word-break:break-word; }
-      .body-preview p,.body-preview div,.body-preview li { max-width:100%; white-space:normal!important; overflow-wrap:anywhere; word-break:break-word; }
+      .body-preview { min-height:0!important; height:auto!important; max-width:100%; line-height:${lineGap}; white-space:normal; overflow:visible!important; overflow-wrap:anywhere; word-break:break-word; }
+      .body-preview p,.body-preview div,.body-preview li { max-width:100%; margin-bottom:${paragraphGap}pt; white-space:normal!important; overflow-wrap:anywhere; word-break:break-word; }
       .body-preview img,.body-preview table { max-width:100%; height:auto; }
       .body-preview table { table-layout:fixed; }
       .signature { margin-top:10mm; line-height:1.5; }
@@ -672,15 +593,6 @@
     };
   };
 
-
-  const newLetterBtn = $('createNewLetterBtn');
-  if(newLetterBtn){
-    newLetterBtn.addEventListener('click', function(){
-      clearForm();
-    });
-  }
-  if($('lineGap')) setLineGap($('lineGap').value);
-  if($('paraGap')) setParagraphGap($('paraGap').value);
   updatePreview();
   updatePageCount();
 
