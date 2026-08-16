@@ -8,20 +8,15 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{font-family:Arial,Helvetica,sans-serif;background:#eef1f5;color:#202733}
-  .app{min-height:100vh;display:flex}
-  .sidebar{width:230px;background:#172033;color:#fff;padding:22px 15px;flex-shrink:0}
-  .brand{font-size:19px;font-weight:700;line-height:1.35;margin-bottom:25px}
-  .brand small{display:block;color:#aeb9cb;font-size:11px;font-weight:400;margin-top:5px}
-  .nav{display:block;text-decoration:none;color:#dce4f0;padding:11px 13px;border-radius:7px;margin:4px 0}
-  .nav.active,.nav:hover{background:#2c3b55;color:#fff}
-  .main{flex:1;padding:25px;min-width:0}
+  .app{min-height:100vh;display:block}
+  .main{width:100%;max-width:1500px;margin:0 auto;padding:20px;min-width:0}
   .top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
   h1{font-size:25px;margin:0 0 5px}
   .sub{font-size:13px;color:#697386}
   .top-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .top-controls label{margin:0}
   .top-controls select{width:auto}
-  .grid{display:grid;grid-template-columns:minmax(450px,1fr) minmax(420px,520px);gap:22px;align-items:start}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
   .card{background:#fff;border-radius:11px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:21px}
   .card h2{font-size:17px;margin:0 0 17px}
   .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
@@ -145,6 +140,36 @@
   .copyto{margin-top:12mm;white-space:pre-line;line-height:1.5}
   .empty-hide:empty{display:none}
   .page-footer{display:none}
+  /* Responsive layout for phones and tablets */
+  @media (max-width: 900px){
+    .main{padding:14px}
+    .top{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:14px}
+    h1{font-size:21px}
+    .top-controls{width:100%;justify-content:flex-start}
+    .top-controls select{min-width:95px}
+    .top-controls button{min-height:42px}
+    .grid{grid-template-columns:1fr;gap:14px;align-items:stretch}
+    .card{padding:16px;border-radius:9px}
+    .preview-wrap{padding:10px;border-radius:9px}
+    .paper{width:100%;}
+    .formgrid{grid-template-columns:1fr;gap:11px}
+    .full{grid-column:auto}
+    input,select,textarea{font-size:16px;min-height:42px}
+    textarea{min-height:100px}
+    .editor{min-height:160px;font-size:16px}
+    .editor-toolbar{gap:4px}
+    .editor-toolbar button{min-height:38px;padding:7px 9px}
+  }
+
+  @media (max-width: 480px){
+    .main{padding:9px}
+    .top-controls{gap:7px}
+    .top-controls label{font-size:12px}
+    .card{padding:13px}
+    .preview-wrap{padding:6px}
+    .letterhead{height:42mm}
+  }
+
   @media print{
     @page{
       size:A4;
@@ -156,7 +181,7 @@
       margin:0;
       padding:0;
     }
-    .sidebar,.top,.form-card{display:none!important}
+    .top,.form-card{display:none!important}
     /* Print only the letter itself; never print application controls. */
     .no-print,
         
@@ -166,7 +191,6 @@
     select,
     .toolbar,
     .form-card,
-    .sidebar,
     .top{
       display:none!important;
     }
@@ -212,16 +236,7 @@
 <body>
 <div class="app">
 
-  <aside class="sidebar">
-    <div class="brand">
-      Letter Generator
-      <small>Workers' Organisation</small>
-    </div>
-    <a class="nav active" href="#">✚ New Letter</a>
-    <a class="nav" href="#">▣ Previous Letters</a>
-    <a class="nav" href="#">▤ Templates</a>
-    <a class="nav" href="#">⚙ Settings</a>
-  </aside>
+
 
   <main class="main">
     <div class="top">
