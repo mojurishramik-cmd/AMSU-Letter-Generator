@@ -8,15 +8,20 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{font-family:Arial,Helvetica,sans-serif;background:#eef1f5;color:#202733}
-  .app{min-height:100vh;display:block}
-  .main{width:100%;max-width:1500px;margin:0 auto;padding:20px;min-width:0}
+  .app{min-height:100vh;display:flex}
+  .sidebar{width:230px;background:#172033;color:#fff;padding:22px 15px;flex-shrink:0}
+  .brand{font-size:19px;font-weight:700;line-height:1.35;margin-bottom:25px}
+  .brand small{display:block;color:#aeb9cb;font-size:11px;font-weight:400;margin-top:5px}
+  .nav{display:block;text-decoration:none;color:#dce4f0;padding:11px 13px;border-radius:7px;margin:4px 0}
+  .nav.active,.nav:hover{background:#2c3b55;color:#fff}
+  .main{flex:1;padding:25px;min-width:0}
   .top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
   h1{font-size:25px;margin:0 0 5px}
   .sub{font-size:13px;color:#697386}
   .top-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .top-controls label{margin:0}
   .top-controls select{width:auto}
-  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+  .grid{display:grid;grid-template-columns:minmax(450px,1fr) minmax(420px,520px);gap:22px;align-items:start}
   .card{background:#fff;border-radius:11px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:21px}
   .card h2{font-size:17px;margin:0 0 17px}
   .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
@@ -140,36 +145,6 @@
   .copyto{margin-top:12mm;white-space:pre-line;line-height:1.5}
   .empty-hide:empty{display:none}
   .page-footer{display:none}
-  /* Responsive layout for phones and tablets */
-  @media (max-width: 900px){
-    .main{padding:14px}
-    .top{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:14px}
-    h1{font-size:21px}
-    .top-controls{width:100%;justify-content:flex-start}
-    .top-controls select{min-width:95px}
-    .top-controls button{min-height:42px}
-    .grid{grid-template-columns:1fr;gap:14px;align-items:stretch}
-    .card{padding:16px;border-radius:9px}
-    .preview-wrap{padding:10px;border-radius:9px}
-    .paper{width:100%;}
-    .formgrid{grid-template-columns:1fr;gap:11px}
-    .full{grid-column:auto}
-    input,select,textarea{font-size:16px;min-height:42px}
-    textarea{min-height:100px}
-    .editor{min-height:160px;font-size:16px}
-    .editor-toolbar{gap:4px}
-    .editor-toolbar button{min-height:38px;padding:7px 9px}
-  }
-
-  @media (max-width: 480px){
-    .main{padding:9px}
-    .top-controls{gap:7px}
-    .top-controls label{font-size:12px}
-    .card{padding:13px}
-    .preview-wrap{padding:6px}
-    .letterhead{height:42mm}
-  }
-
   @media print{
     @page{
       size:A4;
@@ -181,7 +156,7 @@
       margin:0;
       padding:0;
     }
-    .top,.form-card{display:none!important}
+    .sidebar,.top,.form-card{display:none!important}
     /* Print only the letter itself; never print application controls. */
     .no-print,
         
@@ -191,6 +166,7 @@
     select,
     .toolbar,
     .form-card,
+    .sidebar,
     .top{
       display:none!important;
     }
@@ -232,31 +208,50 @@
     }
   }
 </style>
+
+<style id="final-layout">
+  .main{
+    width:100%;
+    max-width:1240px;
+    margin:0 auto;
+    padding:20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:20px;
+    align-items:stretch;
+  }
+  .card,.preview-wrap{min-width:0}
+  .editor-toolbar{align-items:center}
+  .editor-toolbar .inline-tool{white-space:nowrap}
+  @media (min-width:901px){
+    .app{display:block}
+    .main{width:min(1240px, calc(100% - 40px)); max-width:none;}
+  }
+  @media (max-width:900px){
+    .main{width:100%;padding:12px}
+    .grid{grid-template-columns:1fr;gap:14px}
+  }
+</style>
+
+<style id="new-letter-style">
+.top-action-bar{margin-bottom:12px}
+.create-new-letter-btn{border:0;border-radius:7px;padding:10px 15px;font-weight:700;cursor:pointer;background:#edf0f5;color:#253044}
+@media(max-width:900px){.create-new-letter-btn{width:100%;min-height:42px}}
+</style>
 </head>
 <body>
 <div class="app">
-
-
-
-  <main class="main">
+<main class="main">
+    <div class="top-action-bar"><button type="button" class="create-new-letter-btn" id="createNewLetterBtn">＋ Create New Letter</button></div>
     <div class="top">
       <div>
         <h1>Create New Letter</h1>
         <div class="sub">A4 paper · 2 cm margins · live preview</div>
       </div>
       <div class="top-controls">
-        <label for="fontSize">Font Size</label>
-        <select id="fontSize" onchange="setFontSize(this.value)">
-          <option value="10">10 pt</option>
-          <option value="11">11 pt</option>
-          <option value="12" selected>12 pt</option>
-          <option value="13">13 pt</option>
-          <option value="14">14 pt</option>
-          <option value="15">15 pt</option>
-          <option value="16">16 pt</option>
-          <option value="18">18 pt</option>
-        </select>
-        <button class="secondary" type="button" onclick="printLetter()">🖨 Print A4</button>
+<button class="secondary" type="button" onclick="printLetter()">🖨 Print A4</button>
       </div>
     </div>
 
@@ -276,13 +271,7 @@
             <label for="date">Date</label>
             <input id="date" type="date">
           </div>
-
-          <div>
-            <label for="place">Place</label>
-            <input id="place" value="Silchar">
-          </div>
-
-          <div class="full">
+<div class="full">
             <label for="to">To</label>
             <input id="to" placeholder="Name">
           </div>
@@ -313,6 +302,26 @@
               <button type="button" onclick="formatBody('justifyRight')" title="Right">Right</button>
               <button type="button" onclick="formatBody('justifyFull')" title="Justify">Justify</button>
               <button type="button" onclick="formatBody('removeFormat')" title="Clear formatting">Clear</button>
+              <span class="toolbar-separator"></span>
+              <label class="inline-tool" for="fontSize">Font Size</label>
+              <select id="fontSize" onchange="setFontSize(this.value)" aria-label="Font Size">
+                <option value="10">10 pt</option><option value="11">11 pt</option>
+                <option value="12" selected>12 pt</option><option value="13">13 pt</option>
+                <option value="14">14 pt</option><option value="15">15 pt</option>
+                <option value="16">16 pt</option><option value="18">18 pt</option>
+              </select>
+              <label class="inline-tool" for="lineGap">Line Gap</label>
+              <select id="lineGap" onchange="setLineGap(this.value)" aria-label="Line Gap">
+                <option value="1.2">1.2</option><option value="1.4">1.4</option>
+                <option value="1.5" selected>1.5</option><option value="1.7">1.7</option>
+                <option value="2">2.0</option>
+              </select>
+              <label class="inline-tool" for="paraGap">Paragraph Gap</label>
+              <select id="paraGap" onchange="setParagraphGap(this.value)" aria-label="Paragraph Gap">
+                <option value="0">0 pt</option><option value="4">4 pt</option>
+                <option value="6" selected>6 pt</option><option value="8">8 pt</option>
+                <option value="12">12 pt</option><option value="18">18 pt</option>
+              </select>
             </div>
             <div id="bodyEditor" class="editor" contenteditable="true" data-placeholder="Enter the main body of the letter..."></div>
             <div class="hint">Supports bold, italic, underline and paragraph alignment.</div>
@@ -366,16 +375,13 @@
             <b>To</b><br>
             <span id="previewTo">Name</span><br>
             <span id="previewToDesignation">Designation</span><br>
-            <span id="previewAddress" class="address">Address</span>
+            <span id="previewAddress" class="address"><span id="previewAddressText"></span></span>
           </div>
 
           <div class="subject">
             Subject: <span id="previewSubject">—</span>
           </div>
-
-          <div style="margin-top:18px">Respected Sir/Madam,</div>
-
-          <div id="previewBody" class="body-preview" style="margin-top:8px">
+<div id="previewBody" class="body-preview" style="margin-top:8px">
             <span class="body-placeholder">The main body of the letter will appear here.</span>
           </div>
 
@@ -423,7 +429,9 @@
     $('previewDate').textContent = formatDate(textValue('date'));
     $('previewTo').textContent = textValue('to') || 'Name';
     $('previewToDesignation').textContent = textValue('toDesignation') || 'Designation';
-    $('previewAddress').textContent = textValue('address');
+    const address = textValue('address').trim();
+    $('previewAddress').textContent = address;
+    $('previewAddress').style.display = address ? 'inline' : 'none';
     $('previewSubject').textContent = textValue('subject') || '—';
 
     // One Committee field controls both the letterhead and the closing.
@@ -437,6 +445,10 @@
     previewBody.innerHTML = editor.innerHTML.trim()
       ? editor.innerHTML
       : '<span class="body-placeholder">The main body of the letter will appear here.</span>';
+
+    // Re-apply the selected paragraph gap after rebuilding the preview.
+    const paragraphGap = $('paraGap') ? $('paraGap').value : '6';
+    applyParagraphGap(paragraphGap);
 
     $('previewSignatory').textContent =
       textValue('signatory') || 'General Secretary';
@@ -497,7 +509,7 @@
 
   // All ordinary form controls update the preview immediately.
   [
-    'letterNo','date','place','signatory','to',    'toDesignation','address','subject','orgName','committee',
+    'letterNo','date','signatory','to',    'toDesignation','address','subject','orgName','committee',
 'committee','copyTo'
   ].forEach(id => {
     $(id).addEventListener('input', updatePreview);
@@ -505,8 +517,14 @@
   });
 
   // Rich text editor updates on every change.
-  $('bodyEditor').addEventListener('input', updatePreview);
-  $('bodyEditor').addEventListener('keyup', updatePreview);
+  $('bodyEditor').addEventListener('input', function(){
+    updatePreview();
+    applyParagraphGap($('paraGap') ? $('paraGap').value : '6');
+  });
+  $('bodyEditor').addEventListener('keyup', function(){
+    updatePreview();
+    applyParagraphGap($('paraGap') ? $('paraGap').value : '6');
+  });
 
   // Handle pasted content.
   $('bodyEditor').addEventListener('paste', function(){
@@ -517,7 +535,6 @@
 
     $('letterNo').value = '';
     $('date').value = '';
-    $('place').value = '';
     $('signatory').value = 'General Secretary';
     $('to').value = '';
     $('toDesignation').value = '';
@@ -555,6 +572,40 @@
   setFontSize('12');
 
 
+  function setLineGap(value){
+    const editor = $('bodyEditor');
+    const preview = $('previewBody');
+    if(editor) editor.style.lineHeight = value;
+    if(preview) preview.style.lineHeight = value;
+    updatePreview();
+  }
+  window.setLineGap = setLineGap;
+
+  function applyParagraphGap(value){
+    const gap = (parseFloat(value) || 0) + 'pt';
+    const targets = [$('bodyEditor'), $('previewBody')].filter(Boolean);
+
+    targets.forEach(container => {
+      container.querySelectorAll('p,div,li').forEach(el => {
+        el.style.marginBottom = gap;
+      });
+    });
+  }
+
+  function setParagraphGap(value){
+    const gap = parseFloat(value) || 0;
+    $('paraGap').value = String(gap);
+
+    // Apply immediately to the editable body.
+    applyParagraphGap(gap);
+
+    // Rebuild the preview, then apply the spacing again because
+    // updatePreview replaces previewBody.innerHTML.
+    updatePreview();
+    applyParagraphGap(gap);
+  }
+  window.setParagraphGap = setParagraphGap;
+
   window.printLetter = function(){
     updatePreview();
 
@@ -569,6 +620,11 @@
     }
 
     const fs = $('fontSize').value || 12;
+    const paragraphGap = $('paraGap').value || 6;
+
+    // Make sure the selected paragraph gap is present in the cloned paper.
+    paper.querySelectorAll('.body-preview p, .body-preview div, .body-preview li')
+      .forEach(el => el.style.marginBottom = paragraphGap + 'pt');
 
     const css = `
       @page {
@@ -616,6 +672,15 @@
     };
   };
 
+
+  const newLetterBtn = $('createNewLetterBtn');
+  if(newLetterBtn){
+    newLetterBtn.addEventListener('click', function(){
+      clearForm();
+    });
+  }
+  if($('lineGap')) setLineGap($('lineGap').value);
+  if($('paraGap')) setParagraphGap($('paraGap').value);
   updatePreview();
   updatePageCount();
 
